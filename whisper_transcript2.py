@@ -6,7 +6,7 @@ import whisper
 start_time = time.time()
 
 # Paths to directories
-audio_dir = '/ai/whisper/audio'
+audio_dir = '/ai/whisper/audio3'
 text_dir = '/ai/whisper/srt'
 raw_text_dir = '/ai/whisper/text'
 
@@ -15,7 +15,7 @@ os.makedirs(text_dir, exist_ok=True)
 os.makedirs(raw_text_dir, exist_ok=True)  # Create the directory for raw text if it doesn't exist
 
 # Load the Whisper model
-model = whisper.load_model("large")  # You can choose "tiny", "base", "small", "medium", "large" based on your needs
+model = whisper.load_model("tiny")  # You can choose "tiny", "base", "small", "medium", "large" based on your needs
 
 context = (
     "Мы будем обсуждать теорему о трех перпендикулярах."
