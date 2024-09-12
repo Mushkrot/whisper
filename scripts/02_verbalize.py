@@ -7,22 +7,6 @@ from num2words import num2words
 import argparse
 from pathlib import Path
 
-# Print output to log file
-import sys
-class Tee:
-    def __init__(self, *files):
-        self.files = files
-
-    def write(self, obj):
-        for f in self.files:
-            f.write(obj)
-            f.flush()
-    def flush(self):
-        for f in self.files:
-            f.flush()
-logfile = open('output.log', 'a')  # Open log file
-sys.stdout = Tee(sys.stdout, logfile)  # Redirect concole to log
-
 # Paths to directories
 base_dir = Path(__file__).resolve().parent.parent
 input_dir =  base_dir / 'data' / 'output' / 'ru' / 'srt'
@@ -145,5 +129,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-logfile.close()  # Close log file

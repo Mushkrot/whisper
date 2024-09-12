@@ -4,24 +4,6 @@ import os
 import pysrt
 from pathlib import Path
 
-# Print output to log file
-import sys
-class Tee:
-    def __init__(self, *files):
-        self.files = files
-
-    def write(self, obj):
-        for f in self.files:
-            f.write(obj)
-            f.flush()
-
-    def flush(self):
-        for f in self.files:
-            f.flush()
-
-logfile = open('output.log', 'a')  # Open log file
-sys.stdout = Tee(sys.stdout, logfile)  # Redirect console to log
-
 # Paths to directories
 base_dir = Path(__file__).resolve().parent.parent
 input_dir = base_dir / 'data' / 'output' / 'ru' / 'verbalized'
@@ -108,5 +90,3 @@ for filename in os.listdir(input_dir):
         print(f"Processing {input_file}...")
         process_srt_file(input_file, output_file)
         print(f"Processed {input_file} -> {output_file}")
-
-logfile.close()  # Close log file after processing all files

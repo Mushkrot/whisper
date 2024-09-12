@@ -4,22 +4,6 @@ import os
 import whisper
 from pathlib import Path
 
-# Print output to log file
-import sys
-class Tee:
-    def __init__(self, *files):
-        self.files = files
-
-    def write(self, obj):
-        for f in self.files:
-            f.write(obj)
-            f.flush()
-    def flush(self):
-        for f in self.files:
-            f.flush()
-logfile = open('output.log', 'a')  # Open log file
-sys.stdout = Tee(sys.stdout, logfile)  # Redirect concole to log
-
 # Start time tracking
 start_time = time.time()
 
@@ -125,5 +109,3 @@ end_time = time.time()
 elapsed_time = end_time - start_time
 minutes, seconds = divmod(elapsed_time, 60)
 print(f"Time taken for transcription: {int(minutes)} minutes and {seconds:.2f} seconds\n\n")
-
-logfile.close()  # Close log file
