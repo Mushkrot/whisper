@@ -1,4 +1,4 @@
-datetime
+num2words
 openai
 pysrt
-whisper
+openai-whisper
