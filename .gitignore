@@ -168,6 +168,8 @@ cython_debug/
 /venv/
 /data/*
 !/data/
+/data/input/*
+!/data/input
+/data/output/*
+!/data/output
 api_key.txt
-
-
