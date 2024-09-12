@@ -165,6 +165,7 @@ cython_debug/
 .DS_Store
 
 # Project-specific exclusions
+/venv/
 /data/*
 !/data/
 api_key.txt
