@@ -164,10 +164,9 @@ cython_debug/
 # MacOS
 .DS_Store
 
-# The project
 # Project-specific exclusions
 /data/*
-!/data
+!/data/
 api_key.txt
 
 
