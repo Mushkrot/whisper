@@ -1,27 +1,43 @@
+# -*- coding: utf-8 -*-
 import time
 import os
 import whisper
+from pathlib import Path
+
+# Print output to log file
+import sys
+class Tee:
+    def __init__(self, *files):
+        self.files = files
+
+    def write(self, obj):
+        for f in self.files:
+            f.write(obj)
+            f.flush()
+    def flush(self):
+        for f in self.files:
+            f.flush()
+logfile = open('output.log', 'a')  # Open log file
+sys.stdout = Tee(sys.stdout, logfile)  # Redirect concole to log
 
 # Start time tracking
 start_time = time.time()
 
 # Paths to directories
-audio_dir = '/ai/whisper/audio3'
-text_dir = '/ai/whisper/srt'
-raw_text_dir = '/ai/whisper/text'
+base_dir = Path(__file__).resolve().parent.parent
+audio_dir = base_dir / 'data' / 'input'
+srt_dir = base_dir / 'data' / 'output' / 'ru'  / 'srt'
+txt_dir = base_dir / 'data' / 'output' / 'ru'  / 'txt'
 
 # Ensure the output directories exist
-os.makedirs(text_dir, exist_ok=True)
-os.makedirs(raw_text_dir, exist_ok=True)  # Create the directory for raw text if it doesn't exist
+os.makedirs(srt_dir, exist_ok=True)
+os.makedirs(txt_dir, exist_ok=True)
 
 # Load the Whisper model
-model = whisper.load_model("tiny")  # You can choose "tiny", "base", "small", "medium", "large" based on your needs
+model = whisper.load_model("medium")  # You can choose "tiny", "base", "small", "medium", "large" based on your needs
 
 context = (
-    "Мы будем обсуждать теорему о трех перпендикулярах."
-    "Пример правильных обозначений: точка N, отрезок АВ, стороны BCD, точка O."
-    "Все геометрические объекты назваются буквами латинскотго алфавита."
-    "Все геометрические обозначения произносятся четко и правильно."
+    "Webinar or online IT meeting or presentation"
 )
 
 # Function to generate a unique filename
@@ -69,18 +85,20 @@ for index, filename in enumerate(audio_files):
     print(f"Transcribing {filename}... ({progress:.2f}% completed)")
     result = model.transcribe(
         audio_path,
-        language="ru",
+        language="en",
         initial_prompt=context,
         task="transcribe",
         beam_size=5,
         best_of=5,
-        temperature=0.0,
-        fp16=False
+        temperature=0.1,
+        fp16=False,
+        condition_on_previous_text=True,
+        verbose=True
     )
     
     # Save the raw text output before any further processing
-    raw_text_filename = get_unique_filename(os.path.splitext(filename)[0], 'txt', raw_text_dir)
-    with open(os.path.join(raw_text_dir, raw_text_filename), 'w', encoding='utf-8') as raw_text_file:
+    raw_text_filename = get_unique_filename(os.path.splitext(filename)[0], 'txt', txt_dir)
+    with open(os.path.join(txt_dir, raw_text_filename), 'w', encoding='utf-8') as raw_text_file:
         raw_text_file.write(result['text'])
     print(f"Saved raw text file: {raw_text_filename}")
     
@@ -89,10 +107,10 @@ for index, filename in enumerate(audio_files):
         output_extension = 'srt'
         srt_content = result_to_srt(result)
         base_name = os.path.splitext(filename)[0]
-        output_filename = get_unique_filename(base_name, output_extension, text_dir)
+        output_filename = get_unique_filename(base_name, output_extension, srt_dir)
         
         # Write the .srt file
-        with open(os.path.join(text_dir, output_filename), 'w', encoding='utf-8') as srt_file:
+        with open(os.path.join(srt_dir, output_filename), 'w', encoding='utf-8') as srt_file:
             srt_file.write(srt_content)
         print(f"Saved SRT file: {output_filename}")
     
@@ -107,3 +125,5 @@ end_time = time.time()
 elapsed_time = end_time - start_time
 minutes, seconds = divmod(elapsed_time, 60)
 print(f"Time taken for transcription: {int(minutes)} minutes and {seconds:.2f} seconds\n\n")
+
+logfile.close()  # Close log file

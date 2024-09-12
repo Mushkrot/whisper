@@ -1,8 +1,35 @@
+# -*- coding: utf-8 -*-
 import pysrt
+import os
 from datetime import timedelta
+from pathlib import Path
+
+# Print output to log file
+import sys
+class Tee:
+    def __init__(self, *files):
+        self.files = files
+
+    def write(self, obj):
+        for f in self.files:
+            f.write(obj)
+            f.flush()
+    def flush(self):
+        for f in self.files:
+            f.flush()
+logfile = open('output.log', 'a')  # Open log file
+sys.stdout = Tee(sys.stdout, logfile)  # Redirect concole to log
+
+# Paths to directories
+base_dir = Path(__file__).resolve().parent.parent
+input_dir = base_dir / 'data' / 'output' / 'uk'
+output_dir = base_dir / 'data' / 'output' / 'uk'
+
+# Ensure the output directories exist
+os.makedirs(output_dir, exist_ok=True)
 
 # Variable to control the number of seconds for word grouping
-SECONDS_PER_BLOCK = 17 # You can change this value manually to control block length
+SECONDS_PER_BLOCK = 21  # You can change this value manually to control block length
 
 def add_time(start_time, delta_ms):
     """Adds milliseconds to a SubRipTime object and returns a new SubRipTime object."""
@@ -90,7 +117,17 @@ def process_srt_file(input_file, output_file):
     
     new_subs.save(output_file, encoding='utf-8')
 
-# Example of function call
-input_file = '11_A6_uk_whisper.srt'
-output_file = '11_A6_uk_whisper_17.srt'
-process_srt_file(input_file, output_file)
+# Process all SRT files in the input directory
+for filename in os.listdir(input_dir):
+    if filename.endswith('.srt'):
+        input_file = input_dir / filename
+        
+        # Create the output filename by adding '_bigblocks' before the extension
+        output_filename = filename.replace('.srt', '_bigblocks.srt')
+        output_file = output_dir / output_filename
+        
+        print(f"Processing {input_file}...")
+        process_srt_file(input_file, output_file)
+        print(f"Processed {input_file} -> {output_file}")
+
+logfile.close()  # Close log file
