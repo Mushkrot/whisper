@@ -167,5 +167,7 @@ cython_debug/
 # The project
 # Project-specific exclusions
 /data/*
-!/data/
+!/data
+api_key.txt
+
 
