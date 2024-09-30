@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Exit immediately if a critical command exits with a non-zero status
-# Not using 'set -e' to allow selective error handling
-
 # Function to handle critical errors
 handle_error() {
     echo "Error: $1"
@@ -15,6 +12,8 @@ sudo apt update || handle_error "Failed to update package lists."
 sudo apt full-upgrade -y || handle_error "Failed to upgrade packages."
 sudo apt autoremove -y || echo "Warning: Failed to autoremove packages."
 sudo apt clean || echo "Warning: Failed to clean packages."
+
+sudo apt install -y ffmpeg || handle_error "Failed to install required packages."
 
 # Install necessary packages
 echo "Installing necessary packages..."
@@ -40,7 +39,13 @@ if [ ! -d "/ai" ]; then
     echo "/ai directory created with proper permissions."
 else
     echo "/ai directory already exists."
-    sudo chown $USER:$USER /ai || handle_error "Failed to change ownership of /ai."
+    sudo chown -R $USER:$USER /ai || handle_error "Failed to change ownership of /ai and its contents."
+fi
+
+# Ensure /ai is not a git repository
+if [ -d "/ai/.git" ]; then
+    echo "/ai is a git repository. Removing .git directory to prevent conflicts."
+    rm -rf /ai/.git || handle_error "Failed to remove existing /ai/.git directory."
 fi
 
 # Clone the GitHub repository if it hasn't been cloned already
@@ -55,18 +60,22 @@ if [ ! -d "$REPO_DIR/.git" ]; then
 else
     echo "Repository already cloned, pulling latest changes..."
     cd $REPO_DIR || handle_error "Failed to navigate to repository directory."
-    git pull || handle_error "Failed to pull latest changes."
+    # Forcefully reset local changes and match remote
+    git fetch origin || handle_error "Failed to fetch changes from origin."
+    # Determine the default branch (master or main)
+    DEFAULT_BRANCH=$(git remote show origin | grep "HEAD branch" | awk '{print $NF}')
+    git reset --hard origin/$DEFAULT_BRANCH || handle_error "Failed to reset local branch to origin/$DEFAULT_BRANCH."
     cd - >/dev/null || handle_error "Failed to return to previous directory."
 fi
 
 # Create a virtual environment if it doesn't exist or is invalid
-VENV_DIR="/ai/venv"
+VENV_DIR="/ai/whisper/venv"
 echo "Checking for existing virtual environment..."
 if [ -d "$VENV_DIR" ]; then
     if [ -f "$VENV_DIR/bin/activate" ]; then
         echo "Virtual environment already exists."
     else
-        echo "Existing /ai/venv directory found but not a valid virtual environment. Removing and recreating..."
+        echo "Existing virtual environment directory found but not valid. Removing and recreating..."
         rm -rf "$VENV_DIR" || handle_error "Failed to remove invalid virtual environment directory."
         echo "Creating virtual environment in $VENV_DIR..."
         python3 -m venv "$VENV_DIR" || handle_error "Failed to create virtual environment."

@@ -1,6 +1,7 @@
-ffmpeg
+ffmpeg-python
 num2words
 openai
 pysrt
-openai-whisper
+#openai-whisper
+git+https://github.com/openai/whisper.git#egg=whisper
 pydub
