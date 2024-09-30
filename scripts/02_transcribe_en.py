@@ -10,8 +10,8 @@ start_time = time.time()
 # Paths to directories
 base_dir = Path(__file__).resolve().parent.parent
 audio_dir = base_dir / 'data' / 'input'
-srt_dir = base_dir / 'data' / 'output' / 'ru'  / 'srt'
-txt_dir = base_dir / 'data' / 'output' / 'ru'  / 'txt'
+srt_dir = base_dir / 'data' / 'output'
+txt_dir = base_dir / 'data' / 'output'
 
 # Ensure the output directories exist
 os.makedirs(srt_dir, exist_ok=True)
@@ -21,7 +21,7 @@ os.makedirs(txt_dir, exist_ok=True)
 model = whisper.load_model("medium")  # You can choose "tiny", "base", "small", "medium", "large" based on your needs
 
 context = (
-    "Webinar or online IT meeting or presentation"
+    "Webinar or online meeting or presentation. There are three speakers"
 )
 
 # Function to generate a unique filename
@@ -65,7 +65,7 @@ for index, filename in enumerate(audio_files):
     # Full path to the audio file
     audio_path = os.path.join(audio_dir, filename)
     
-    # Transcribe the audio file with explicit Russian language setting
+    # Transcribe the audio file with explicit English language setting
     print(f"Transcribing {filename}... ({progress:.2f}% completed)")
     result = model.transcribe(
         audio_path,

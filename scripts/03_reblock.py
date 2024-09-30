@@ -6,8 +6,8 @@ from pathlib import Path
 
 # Paths to directories
 base_dir = Path(__file__).resolve().parent.parent
-input_dir = base_dir / 'data' / 'output' / 'uk'
-output_dir = base_dir / 'data' / 'output' / 'uk'
+input_dir = base_dir / 'data' / 'output'
+output_dir = base_dir / 'data' / 'output'
 
 # Ensure the output directories exist
 os.makedirs(output_dir, exist_ok=True)
@@ -106,10 +106,10 @@ for filename in os.listdir(input_dir):
     if filename.endswith('.srt'):
         input_file = input_dir / filename
         
-        # Create the output filename by adding '_bigblocks' before the extension
-        output_filename = filename.replace('.srt', '_bigblocks.srt')
+        # Change name if requiered
+        output_filename = filename.replace('.srt', '.srt')
         output_file = output_dir / output_filename
         
         print(f"Processing {input_file}...")
         process_srt_file(input_file, output_file)
-        print(f"Processed {input_file} -> {output_file}")
+        print(f"Processed {input_file} -> {output_file}\n\n")

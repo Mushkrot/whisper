@@ -173,3 +173,5 @@ cython_debug/
 /data/output/*
 !/data/output
 api_key.txt
+/Amazon
+/scripts\ bkp/

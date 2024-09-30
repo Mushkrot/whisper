@@ -10,8 +10,8 @@ start_time = time.time()
 # Paths to directories
 base_dir = Path(__file__).resolve().parent.parent
 audio_dir = base_dir / 'data' / 'input'
-srt_dir = base_dir / 'data' / 'output' / 'ru'  / 'srt'
-txt_dir = base_dir / 'data' / 'output' / 'ru'  / 'txt'
+srt_dir = base_dir / 'data' / 'output'
+txt_dir = base_dir / 'data' / 'output'
 
 # Ensure the output directories exist
 os.makedirs(srt_dir, exist_ok=True)
@@ -20,13 +20,9 @@ os.makedirs(txt_dir, exist_ok=True)
 # Load the Whisper model
 model = whisper.load_model("large")  # You can choose "tiny", "base", "small", "medium", "large" based on your needs
 
-context = (
-    "Лекции, задачи и примеры по алгебре."
-    "Алгебраические уравнения и неравенства"
-    "Показательные, оинейные, не линейные и логарифмические функции"
-    "Пример: 'y = lg tg x + lg ctg x' – это 'игрек равен лг тангенс икс плюс лг котангенс икс"
-    "Пример: 'y = log x 1' – это 'игрек равен логарифм икс один"
-)
+#context = (
+#    "Мы будем траскрибировать лекции по математике (алгебра и геометрия старших классов)."
+#)
 
 # Function to generate a unique filename
 def get_unique_filename(base_name, extension, directory):
@@ -37,11 +33,12 @@ def get_unique_filename(base_name, extension, directory):
         counter += 1
     return unique_name
 
-# Custom function to convert results to SRT format
-def result_to_srt(result):
+# Custom function to convert results to SRT format with adjusted start time for the first segment
+def result_to_srt(result, initial_shift=6):
     srt_content = []
     for i, segment in enumerate(result['segments']):
-        start = segment['start']
+        # Shift only the start time of the first segment
+        start = segment['start'] + initial_shift if i == 0 else segment['start']
         end = segment['end']
         text = segment['text'].strip()
         srt_content.append(f"{i + 1}")
@@ -51,11 +48,12 @@ def result_to_srt(result):
     return "\n".join(srt_content)
 
 def format_time(seconds):
-    hours = int(seconds // 3600)
-    minutes = int((seconds % 3600) // 60)
-    seconds = int(seconds % 60)
-    milliseconds = int((seconds % 1) * 1000)
-    return f"{hours:02}:{minutes:02}:{seconds:02},{milliseconds:03}"
+    total_seconds = float(seconds)
+    hours = int(total_seconds // 3600)
+    minutes = int((total_seconds % 3600) // 60)
+    secs = int(total_seconds % 60)
+    milliseconds = int(round((total_seconds - int(total_seconds)) * 1000))
+    return f"{hours:02}:{minutes:02}:{secs:02},{milliseconds:03}"
 
 # List all audio files (handling multiple extensions)
 supported_extensions = ('.wav', '.mp3', '.m4a', '.flac', '.ogg', '.aac')  # Add other supported formats as needed
@@ -74,7 +72,7 @@ for index, filename in enumerate(audio_files):
     result = model.transcribe(
         audio_path,
         language="ru",
-        initial_prompt=context,
+#        initial_prompt=context,
         task="transcribe",
         beam_size=5,
         best_of=5,

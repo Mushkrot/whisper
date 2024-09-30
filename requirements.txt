@@ -1,4 +1,6 @@
+ffmpeg
 num2words
 openai
 pysrt
 openai-whisper
+pydub
