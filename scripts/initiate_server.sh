@@ -28,6 +28,19 @@ else
     echo "ffmpeg is already installed."
 fi
 
+# Install nvidia-cuda-toolkit and NVIDIA drivers
+if ! command -v nvcc &> /dev/null; then
+    echo "Installing nvidia-cuda-toolkit and nvidia-driver-525"
+    
+    # Install NVIDIA CUDA toolkit
+    sudo apt install -y nvidia-cuda-toolkit || handle_error "Failed to install nvidia-cuda-toolkit."
+    
+    # Install NVIDIA drivers
+    sudo apt install -y nvidia-driver-525 || handle_error "Failed to install nvidia-driver-525."
+else
+    echo "nvidia-cuda-toolkit is already installed."
+fi
+
 # Install necessary packages
 echo "Installing necessary packages..."
 sudo apt install -y git python3-pip python3-venv || handle_error "Failed to install required packages."
@@ -126,6 +139,10 @@ source "$VENV_DIR/bin/activate" || handle_error "Failed to activate virtual envi
 # Upgrade pip to the latest version
 echo "Upgrading pip..."
 pip install --upgrade pip || handle_error "Failed to upgrade pip."
+
+# Install PyTorch with CUDA 11.5 support
+echo "Installing PyTorch with CUDA 11.5 support..."
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu115 || handle_error "Failed to install PyTorch with CUDA 11.5."
 
 # Install dependencies from requirements.txt if it exists
 REQUIREMENTS_FILE="$REPO_DIR/requirements.txt"

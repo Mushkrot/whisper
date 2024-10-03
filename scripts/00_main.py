@@ -6,9 +6,9 @@ import os
 scripts = [
             "01_audio_detach.py",
             "02_transcribe.py",
-            "03_bigblocks.py",
-            "04_verbalize.py",
-            "05_translate.py"
+#            "03_bigblocks.py",
+#            "04_verbalize.py",
+#            "05_translate.py"
 ]
 
 # Directory where the scripts are located (adjust if needed)

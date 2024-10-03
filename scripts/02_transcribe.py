@@ -20,7 +20,7 @@ os.makedirs(txt_dir, exist_ok=True)
 # Load the Whisper model
 # You can choose "tiny", "base", "small", "medium", "large" based on your needs fopr version 2
 # For version 3 use large-v3
-model = whisper.load_model("large-v3")  
+model = whisper.load_model("large")  
 
 #context = (
 #    "Мы будем траскрибировать лекции по математике (алгебра и геометрия старших классов)."
@@ -79,7 +79,7 @@ for index, filename in enumerate(audio_files):
         beam_size=5,
         best_of=5,
         temperature=0.1,
-        fp16=False,
+        fp16=True,
         condition_on_previous_text=False,
         verbose=True
     )
