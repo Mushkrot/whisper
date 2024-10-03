@@ -6,14 +6,27 @@ handle_error() {
     exit 1
 }
 
-# Update and upgrade the system
-echo "Updating and upgrading the system..."
+# Check for system updates and upgrade if necessary
+echo "Checking for system updates..."
 sudo apt update || handle_error "Failed to update package lists."
-sudo apt full-upgrade -y || handle_error "Failed to upgrade packages."
-sudo apt autoremove -y || echo "Warning: Failed to autoremove packages."
-sudo apt clean || echo "Warning: Failed to clean packages."
 
-sudo apt install -y ffmpeg || handle_error "Failed to install required packages."
+UPDATES=$(apt list --upgradable 2>/dev/null | wc -l)
+if [ "$UPDATES" -gt 1 ]; then
+    echo "System updates are available. Upgrading..."
+    sudo apt full-upgrade -y || handle_error "Failed to upgrade packages."
+    sudo apt autoremove -y || echo "Warning: Failed to autoremove packages."
+    sudo apt clean || echo "Warning: Failed to clean packages."
+else
+    echo "System is up to date."
+fi
+
+# Install ffmpeg if not already installed
+if ! command -v ffmpeg &> /dev/null; then
+    echo "Installing ffmpeg..."
+    sudo apt install -y ffmpeg || handle_error "Failed to install ffmpeg."
+else
+    echo "ffmpeg is already installed."
+fi
 
 # Install necessary packages
 echo "Installing necessary packages..."
@@ -34,12 +47,20 @@ fi
 echo "Setting up /ai directory..."
 if [ ! -d "/ai" ]; then
     sudo mkdir -p /ai || handle_error "Failed to create /ai directory."
-    sudo chown $USER:$USER /ai || handle_error "Failed to change ownership of /ai."
+    sudo chown "$USER:$USER" /ai || handle_error "Failed to change ownership of /ai."
     sudo chmod 755 /ai || handle_error "Failed to set permissions for /ai."
     echo "/ai directory created with proper permissions."
 else
     echo "/ai directory already exists."
-    sudo chown -R $USER:$USER /ai || handle_error "Failed to change ownership of /ai and its contents."
+    # Check ownership and permissions
+    OWNER=$(stat -c '%U' /ai)
+    if [ "$OWNER" != "$USER" ]; then
+        sudo chown -R "$USER:$USER" /ai || handle_error "Failed to change ownership of /ai and its contents."
+    fi
+    PERMS=$(stat -c '%A' /ai)
+    if [ "$PERMS" != "drwxr-xr-x" ]; then
+        sudo chmod -R u+rwX /ai || handle_error "Failed to set permissions for /ai and its contents."
+    fi
 fi
 
 # Ensure /ai is not a git repository
@@ -55,21 +76,32 @@ REPO_URL="https://github.com/Mushkrot/whisper.git"
 echo "Checking if the repository is already cloned..."
 if [ ! -d "$REPO_DIR/.git" ]; then
     echo "Cloning the repository..."
-    git clone $REPO_URL $REPO_DIR --depth 1 || handle_error "Failed to clone the repository."
+    git clone "$REPO_URL" "$REPO_DIR" --depth 1 || handle_error "Failed to clone the repository."
     echo "Repository cloned into $REPO_DIR."
 else
-    echo "Repository already cloned, pulling latest changes..."
-    cd $REPO_DIR || handle_error "Failed to navigate to repository directory."
-    # Forcefully reset local changes and match remote
-    git fetch origin || handle_error "Failed to fetch changes from origin."
-    # Determine the default branch (master or main)
-    DEFAULT_BRANCH=$(git remote show origin | grep "HEAD branch" | awk '{print $NF}')
-    git reset --hard origin/$DEFAULT_BRANCH || handle_error "Failed to reset local branch to origin/$DEFAULT_BRANCH."
+    echo "Repository already cloned."
+    cd "$REPO_DIR" || handle_error "Failed to navigate to repository directory."
+    # Check for local changes
+    if [ -n "$(git status --porcelain)" ]; then
+        echo "Local changes detected. Stashing before pulling updates."
+        git stash || handle_error "Failed to stash local changes."
+        STASHED=true
+    fi
+    # Pull latest changes
+    git pull || handle_error "Failed to pull latest changes."
+    if [ "$STASHED" = true ]; then
+        echo "Applying stashed changes."
+        git stash pop || echo "No stashed changes to apply."
+    fi
     cd - >/dev/null || handle_error "Failed to return to previous directory."
 fi
 
+# Ensure the user owns all files in /ai/whisper
+sudo chown -R "$USER:$USER" "$REPO_DIR" || handle_error "Failed to change ownership of $REPO_DIR and its contents."
+sudo chmod -R u+rwX "$REPO_DIR" || handle_error "Failed to set permissions for $REPO_DIR and its contents."
+
 # Create a virtual environment if it doesn't exist or is invalid
-VENV_DIR="/ai/whisper/venv"
+VENV_DIR="$REPO_DIR/venv"
 echo "Checking for existing virtual environment..."
 if [ -d "$VENV_DIR" ]; then
     if [ -f "$VENV_DIR/bin/activate" ]; then
@@ -107,11 +139,11 @@ fi
 
 echo "Virtual environment is set up and dependencies are installed."
 
-# (Optional) Add commands to run your application here
-# For example:
-# python3 your_script.py
-
 # Deactivate the virtual environment
 deactivate || echo "Warning: Failed to deactivate virtual environment."
+
+# Reminder to the user
+echo "To activate the virtual environment later, run:"
+echo "source $VENV_DIR/bin/activate"
 
 echo "Script completed successfully."

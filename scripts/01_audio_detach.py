@@ -50,8 +50,8 @@ for index, filename in enumerate(video_files):
         '-i', video_path,
         '-vn',
         '-ac', '1',
-        '-ar', '16000',
-        '-c:a', 'pcm_s16le',
+        '-ar', '24000',
+        '-c:a', 'pcm_s24le',
         # Noise reduction filter with parameters:
         # nr: Noise reduction level in decibels (0-80)
         # nt: Noise threshold (0.0-1.0)
