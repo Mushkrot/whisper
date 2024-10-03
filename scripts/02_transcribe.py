@@ -18,7 +18,9 @@ os.makedirs(srt_dir, exist_ok=True)
 os.makedirs(txt_dir, exist_ok=True)
 
 # Load the Whisper model
-model = whisper.load_model("large")  # You can choose "tiny", "base", "small", "medium", "large" based on your needs
+# You can choose "tiny", "base", "small", "medium", "large" based on your needs fopr version 2
+# For version 3 use large-v3
+model = whisper.load_model("large-v3")  
 
 #context = (
 #    "Мы будем траскрибировать лекции по математике (алгебра и геометрия старших классов)."
