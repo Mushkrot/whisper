@@ -67,9 +67,9 @@ def use_openai_for_replacements(text_batch):
 
     # Use the ChatCompletion endpoint
     # New models are "o1-preview" and "o1-mini".
-    # GPT-4o:       approximately   $0.030 per 15 min srt file
-    # o1-mini:      approximately   $0.036 per 15 min srt file
-    # o1-preview:   approximately   $0.18 per 15 min srt file
+    # gpt-4o-2024-08-06:    approximately   $0.030 per 15 min srt file
+    # o1-mini:              approximately   $0.036 per 15 min srt file
+    # o1-preview:           approximately   $0.18 per 15 min srt file
     response = client.chat.completions.create(model="gpt-4o-2024-08-06",
     messages=messages,
     max_tokens=1500,
