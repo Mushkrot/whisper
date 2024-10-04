@@ -33,6 +33,10 @@ blocks_per_request = 10  # Number of subtitle blocks to send in one request
 separator = "<|SUB_SEPARATOR|>"  # Unique separator to join subtitle texts
 
 # Function to translate a batch of texts using OpenAI GPT-4
+# New models are "o1-preview" and "o1-mini".
+# GPT-4o:       approximately   $0.030 per 15 min srt file
+# o1-mini:      approximately   $0.036 per 15 min srt file
+# o1-preview:   approximately   $0.18 per 15 min srt file
 def translate_text_batch(text_batch, source_language="ru", target_language="uk"):
     try:
         response = client.chat.completions.create(model="gpt-4o-2024-08-06",
