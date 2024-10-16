@@ -6,7 +6,7 @@ import os
 scripts = [
             "01_audio_detach.py",
             "02_transcribe.py",
-#            "03_bigblocks.py",
+#            "03_reblocks.py",
 #            "04_verbalize.py",
 #            "05_translate.py"
 ]

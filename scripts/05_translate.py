@@ -56,13 +56,13 @@ For example:
 - Do not introduce mathematical symbols, Latin, or Greek letters in the translation. Keep all designations in {target_language} alphabet letters.
 - Please pay attention to the following terminology preferences:
 - Use 'суміжних' instead of 'сусідніх'.
-- Use 'похилі' вместо 'нахилені'.
-- Use 'дорівнює' вместо 'рівне'.
-- Use 'бічні сторони' вместо 'бокові сторони'.
-- Use 'основи' вместо 'підстави'.
-- Use 'крапка' вместо 'точка'.
-- Use 'степінь' (masculine) вместо 'ступінь' (feminine).
-- Use 'додатні' вместо 'позитивні'.
+- Use 'похилі' instead 'нахилені'.
+- Use 'дорівнює' instead 'рівне'.
+- Use 'бічні сторони' instead 'бокові сторони'.
+- Use 'основи' instead 'підстави'.
+- Use 'крапка' instead 'точка'.
+- Use 'степінь' (masculine) instead 'ступінь' (feminine).
+- Use 'додатні' instead 'позитивні'.
 Please ensure that multiple subtitle blocks are separated by the unique separator "<|SUB_SEPARATOR|>" and translate each block individually while preserving the separator."""
                 )
             },
