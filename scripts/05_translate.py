@@ -54,15 +54,15 @@ For example:
 - Replace 'С-четыре' with 'С-чотири'.
 - Replace 'икс квадрат' with 'ікс квадрат'.
 - Do not introduce mathematical symbols, Latin, or Greek letters in the translation. Keep all designations in {target_language} alphabet letters.
-- Please pay attention to the following terminology preferences:
+- Please pay attention to the following mathematical terminology preferences:
 - Use 'суміжних' instead of 'сусідніх'.
-- Use 'похилі' instead 'нахилені'.
-- Use 'дорівнює' instead 'рівне'.
-- Use 'бічні сторони' instead 'бокові сторони'.
-- Use 'основи' instead 'підстави'.
-- Use 'крапка' instead 'точка'.
-- Use 'степінь' (masculine) instead 'ступінь' (feminine).
-- Use 'додатні' instead 'позитивні'.
+- Use 'похилі' instead of 'нахилені'.
+- Use 'дорівнює' instead of 'рівне'.
+- Use 'бічні сторони' instead of 'бокові сторони'.
+- Use 'основи' instead of 'підстави'.
+- Use 'точка' instead of 'крапка'.
+- Use 'степінь' (masculine) instead of 'ступінь' (feminine).
+- Use 'додатні' instead of 'позитивні'.
 Please ensure that multiple subtitle blocks are separated by the unique separator "<|SUB_SEPARATOR|>" and translate each block individually while preserving the separator."""
                 )
             },
