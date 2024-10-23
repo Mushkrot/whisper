@@ -127,7 +127,7 @@ def process_directory(input_dir, output_dir):
             # Change name if requiered
             output_file = os.path.join(output_dir, filename.replace('.srt', '.srt'))
 
-            print(f"Processing {input_file}...")
+            print(f"\nProcessing {input_file}...")
             process_srt_file(input_file, output_file)
             print(f"Processed {input_file} -> {output_file}")
 
